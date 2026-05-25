@@ -1,0 +1,126 @@
+tenant_id,company_name,account_number,meter_id,site_name,billing_period_start,billing_period_end,units_consumed,unit,tariff_category,supplier_name,invoice_number,invoice_date
+T001,Tata Manufacturing Ltd,ACC-1000,PUN-2000,Pune Factory,2024-03-28,2024-04-26,11314.12,kWh,Industrial-HT,MSEDCL,INV-5000,2024-05-01
+T001,Tata Manufacturing Ltd,ACC-1001,GUJ-2001,Gujarat Unit,2024-04-06,2024-05-04,12662.48,kWh,Industrial-HT,Torrent Power,INV-5001,2024-05-09
+T001,Tata Manufacturing Ltd,ACC-1002,PUN-2002,Pune Factory,2024-02-26,2024-03-28,13323.16,UNKNOWN,Industrial-HT,MSEDCL,INV-5002,2024-04-02
+T001,Tata Manufacturing Ltd,ACC-1003,PUN-2003,Pune Factory,2024-05-28,2024-06-25,18025.89,kWh,Industrial-HT,MSEDCL,INV-5003,2027-01-15
+T001,Tata Manufacturing Ltd,ACC-1004,MUM-2004,Mumbai Plant,2024-04-10,2024-05-10,16969.59,kVAh,Industrial-HT,Tata Power,INV-5004,2024-05-15
+T001,Tata Manufacturing Ltd,ACC-1005,PUN-2005,Pune Factory,2024-01-09,2024-02-09,7394.92,kVAh,Industrial-HT,MSEDCL,INV-5005,2024-02-14
+T001,Tata Manufacturing Ltd,ACC-1006,DEL-2006,Delhi Warehouse,2024-04-12,2024-05-12,11386.31,kVAh,Commercial-LT,BSES,INV-5006,2024-05-17
+T001,Tata Manufacturing Ltd,ACC-1007,PUN-2007,Pune Factory,2024-04-12,2024-05-13,17713.83,kVAh,Industrial-HT,MSEDCL,INV-5007,2024-05-18
+T001,Tata Manufacturing Ltd,ACC-1008,DEL-2008,Delhi Warehouse,2024-05-19,2024-06-16,10414.25,kVAh,Commercial-LT,BSES,INV-5008,2024-06-21
+T001,Tata Manufacturing Ltd,ACC-1009,PUN-2009,Pune Factory,2024-04-12,2024-05-12,10453.12,kVAh,Industrial-HT,MSEDCL,INV-5009,2024-05-17
+T001,Tata Manufacturing Ltd,ACC-1010,MUM-2010,Mumbai Plant,2024-04-01,2024-04-30,9813.11,kWh,Industrial-HT,Tata Power,INV-5010,2024-05-05
+T001,Tata Manufacturing Ltd,ACC-1011,PUN-2011,Pune Factory,2024-01-02,2024-01-30,11584.53,kVAh,Industrial-HT,MSEDCL,INV-5011,2024-02-04
+T001,Tata Manufacturing Ltd,ACC-1012,MUM-2012,Mumbai Plant,2024-02-25,2024-03-26,8718.38,kVAh,Industrial-HT,Tata Power,INV-5012,2024-03-31
+T001,Tata Manufacturing Ltd,ACC-1013,DEL-2013,Delhi Warehouse,2024-04-01,2024-04-30,12448.38,kVAh,Commercial-LT,BSES,INV-5013,2024-05-05
+T001,Tata Manufacturing Ltd,ACC-1014,DEL-2014,Delhi Warehouse,2024-01-26,2024-02-24,12653.05,kWh,Commercial-LT,BSES,INV-5014,2024-02-29
+T001,Tata Manufacturing Ltd,ACC-1015,,Pune Factory,2024-02-13,2024-03-15,7770.83,kVAh,Industrial-HT,MSEDCL,INV-5015,2024-03-20
+T001,Tata Manufacturing Ltd,ACC-1016,MUM-2016,Mumbai Plant,2024-03-31,2024-04-30,14764.22,kWh,Industrial-HT,Tata Power,INV-5016,2024-05-05
+T001,Tata Manufacturing Ltd,ACC-1017,GUJ-2017,Gujarat Unit,2024-04-17,2024-05-18,12142.87,kVAh,Industrial-HT,Torrent Power,INV-5017,2024-05-23
+T001,Tata Manufacturing Ltd,ACC-1018,PUN-2018,Pune Factory,2024-04-26,2024-05-25,8101.87,kVAh,Industrial-HT,MSEDCL,INV-5018,2024-05-30
+T001,Tata Manufacturing Ltd,ACC-1019,GUJ-2019,Gujarat Unit,2024-01-31,2024-02-28,14840.06,kVAh,Industrial-HT,Torrent Power,INV-5019,2024-03-04
+T001,Tata Manufacturing Ltd,ACC-1020,DEL-2020,Delhi Warehouse,2024-05-02,2024-05-30,12288.53,kVAh,Commercial-LT,BSES,INV-5020,2024-06-04
+T001,Tata Manufacturing Ltd,ACC-1021,DEL-2021,Delhi Warehouse,2024-01-08,2024-02-07,13519.04,kWh,Commercial-LT,BSES,INV-5021,2024-02-12
+T001,Tata Manufacturing Ltd,ACC-1022,MUM-2022,Mumbai Plant,2024-05-01,2024-05-30,8935.54,kWh,Industrial-HT,Tata Power,INV-5022,2024-06-04
+T001,Tata Manufacturing Ltd,ACC-1023,GUJ-2023,Gujarat Unit,2024-05-16,2024-06-16,9124.84,kWh,Industrial-HT,Torrent Power,INV-5023,2024-06-21
+T001,Tata Manufacturing Ltd,ACC-1024,GUJ-2024,Gujarat Unit,2024-01-08,2024-02-07,13836.2,UNKNOWN,Industrial-HT,Torrent Power,INV-5024,2024-02-12
+T001,Tata Manufacturing Ltd,ACC-1025,PUN-2025,Pune Factory,2024-02-04,2024-03-03,12397.77,kWh,Industrial-HT,MSEDCL,INV-5025,2024-03-08
+T001,Tata Manufacturing Ltd,ACC-1026,GUJ-2026,Gujarat Unit,2024-02-19,2024-03-18,11812.53,UNKNOWN,Industrial-HT,Torrent Power,INV-5026,2024-03-23
+T001,Tata Manufacturing Ltd,ACC-1027,GUJ-2027,Gujarat Unit,2024-04-16,2024-05-16,7611.23,kVAh,Industrial-HT,Torrent Power,INV-5027,2024-05-21
+T001,Tata Manufacturing Ltd,ACC-1028,MUM-2028,Mumbai Plant,2024-01-03,2024-02-01,13319.84,kWh,Industrial-HT,Tata Power,INV-5028,2024-02-06
+T001,Tata Manufacturing Ltd,ACC-1029,GUJ-2029,Gujarat Unit,2024-04-15,2024-05-13,7911.57,kVAh,Industrial-HT,Torrent Power,INV-5029,2024-05-18
+T001,Tata Manufacturing Ltd,ACC-1030,DEL-2030,Delhi Warehouse,2024-03-09,2024-04-06,8103.73,kWh,Commercial-LT,BSES,INV-5030,2024-04-11
+T001,Tata Manufacturing Ltd,ACC-1031,MUM-2031,Mumbai Plant,2024-01-13,2024-02-10,10024.57,kWh,Industrial-HT,Tata Power,INV-5031,2024-02-15
+T001,Tata Manufacturing Ltd,ACC-1032,MUM-2032,Mumbai Plant,2024-03-22,2024-04-20,13179.17,kWh,Industrial-HT,Tata Power,INV-5032,2024-04-25
+T001,Tata Manufacturing Ltd,ACC-1033,MUM-2033,Mumbai Plant,2024-03-27,2024-04-26,6649.83,kWh,Industrial-HT,Tata Power,INV-5033,2024-05-01
+T001,Tata Manufacturing Ltd,ACC-1034,,Delhi Warehouse,2024-02-12,2024-03-11,6426.06,kVAh,Commercial-LT,BSES,INV-5034,2024-03-16
+T001,Tata Manufacturing Ltd,ACC-1035,PUN-2035,Pune Factory,2024-02-08,2024-03-07,13869.17,kVAh,Industrial-HT,MSEDCL,INV-5035,2024-03-12
+T001,Tata Manufacturing Ltd,ACC-1036,GUJ-2036,Gujarat Unit,2024-03-07,2024-04-07,10989.52,kWh,Industrial-HT,Torrent Power,INV-5036,2024-04-12
+T001,Tata Manufacturing Ltd,ACC-1037,GUJ-2037,Gujarat Unit,2024-05-24,2024-06-21,14268.83,kWh,Industrial-HT,Torrent Power,INV-5037,2024-06-26
+T001,Tata Manufacturing Ltd,ACC-1038,GUJ-2038,Gujarat Unit,2024-02-01,2024-03-01,5763.68,kWh,Industrial-HT,Torrent Power,INV-5038,2024-03-06
+T001,Tata Manufacturing Ltd,ACC-1039,GUJ-2039,Gujarat Unit,2024-03-27,2024-04-25,13527.31,kWh,Industrial-HT,Torrent Power,INV-5039,2024-04-30
+T001,Tata Manufacturing Ltd,ACC-1040,DEL-2040,Delhi Warehouse,2024-03-25,2024-04-25,12562.82,kVAh,Commercial-LT,BSES,INV-5040,2024-04-30
+T001,Tata Manufacturing Ltd,ACC-1041,MUM-2041,Mumbai Plant,2024-01-15,2024-02-15,6774.18,kWh,Industrial-HT,Tata Power,INV-5041,2024-02-20
+T001,Tata Manufacturing Ltd,ACC-1042,MUM-2042,Mumbai Plant,2024-02-19,2024-03-19,13637.8,kVAh,Industrial-HT,Tata Power,INV-5042,2024-03-24
+T001,Tata Manufacturing Ltd,ACC-1043,DEL-2043,Delhi Warehouse,2024-04-23,2024-05-24,15680.49,kVAh,Commercial-LT,BSES,INV-5043,2024-05-29
+T001,Tata Manufacturing Ltd,ACC-1044,MUM-2044,Mumbai Plant,2024-01-17,2024-02-16,13117.6,kVAh,Industrial-HT,Tata Power,INV-5044,2024-02-21
+T001,Tata Manufacturing Ltd,ACC-1045,MUM-2045,Mumbai Plant,2024-05-05,2024-06-03,15287.57,kWh,Industrial-HT,Tata Power,INV-5045,2024-06-08
+T001,Tata Manufacturing Ltd,ACC-1046,GUJ-2046,Gujarat Unit,2024-04-04,2024-05-02,14326.2,kWh,Industrial-HT,Torrent Power,INV-5046,2024-05-07
+T001,Tata Manufacturing Ltd,ACC-1047,DEL-2047,Delhi Warehouse,2024-05-17,2024-06-17,13358.77,kVAh,Commercial-LT,BSES,INV-5047,2024-06-22
+T001,Tata Manufacturing Ltd,ACC-1048,MUM-2048,Mumbai Plant,2024-02-18,2024-03-20,11906.94,kVAh,Industrial-HT,Tata Power,INV-5048,2024-03-25
+T001,Tata Manufacturing Ltd,ACC-1049,GUJ-2049,Gujarat Unit,2024-01-19,2024-02-16,14356.89,kWh,Industrial-HT,Torrent Power,INV-5049,2024-02-21
+T001,Tata Manufacturing Ltd,ACC-1050,GUJ-2050,Gujarat Unit,2024-04-16,2024-05-16,8169.16,kWh,Industrial-HT,Torrent Power,INV-5050,2024-05-21
+T001,Tata Manufacturing Ltd,ACC-1051,GUJ-2051,Gujarat Unit,2024-02-01,2024-03-01,11551.6,kWh,Industrial-HT,Torrent Power,INV-5051,2024-03-06
+T001,Tata Manufacturing Ltd,ACC-1052,GUJ-2052,Gujarat Unit,2024-05-23,2024-06-21,6708.71,kWh,Industrial-HT,Torrent Power,INV-5052,2024-06-26
+T001,Tata Manufacturing Ltd,ACC-1053,PUN-2053,Pune Factory,2024-01-31,2024-03-02,8660.22,kVAh,Industrial-HT,MSEDCL,INV-5053,2024-03-07
+T001,Tata Manufacturing Ltd,ACC-1054,GUJ-2054,Gujarat Unit,2024-03-02,2024-03-31,12276.94,kVAh,Industrial-HT,Torrent Power,INV-5054,2024-04-05
+T001,Tata Manufacturing Ltd,ACC-1055,MUM-2055,Mumbai Plant,2024-03-20,2024-04-18,8462.71,kWh,Industrial-HT,Tata Power,INV-5055,2024-04-23
+T001,Tata Manufacturing Ltd,ACC-1056,DEL-2056,Delhi Warehouse,2024-05-04,2024-06-02,10246.35,kWh,Commercial-LT,BSES,INV-5056,2024-06-07
+T001,Tata Manufacturing Ltd,ACC-1057,MUM-2057,Mumbai Plant,2024-04-06,2024-05-04,11189.98,kVAh,Industrial-HT,Tata Power,INV-5057,2024-05-09
+T001,Tata Manufacturing Ltd,ACC-1058,DEL-2058,Delhi Warehouse,2024-01-29,2024-02-29,5240.71,kVAh,Commercial-LT,BSES,INV-5058,2024-03-05
+T001,Tata Manufacturing Ltd,ACC-1059,MUM-2059,Mumbai Plant,2024-01-13,2024-02-13,12609.39,kWh,Industrial-HT,Tata Power,INV-5059,2027-01-15
+T001,Tata Manufacturing Ltd,ACC-1060,PUN-2060,Pune Factory,2024-03-03,2024-04-02,12785.33,kWh,Industrial-HT,MSEDCL,INV-5060,2024-04-07
+T001,Tata Manufacturing Ltd,ACC-1061,DEL-2061,Delhi Warehouse,2024-05-29,2024-06-29,10516.35,kVAh,Commercial-LT,BSES,INV-5061,2024-07-04
+T001,Tata Manufacturing Ltd,ACC-1062,MUM-2062,Mumbai Plant,2024-01-17,2024-02-14,5124.61,kVAh,Industrial-HT,Tata Power,INV-5062,2024-02-19
+T001,Tata Manufacturing Ltd,ACC-1063,GUJ-2063,Gujarat Unit,2024-03-25,2024-04-22,5884.58,kVAh,Industrial-HT,Torrent Power,INV-5063,2024-04-27
+T001,Tata Manufacturing Ltd,ACC-1064,GUJ-2064,Gujarat Unit,2024-03-12,2024-04-12,9902.51,kVAh,Industrial-HT,Torrent Power,INV-5064,2024-04-17
+T001,Tata Manufacturing Ltd,ACC-1065,MUM-2065,Mumbai Plant,2024-01-27,2024-02-26,12250.42,kWh,Industrial-HT,Tata Power,INV-5065,2024-03-02
+T001,Tata Manufacturing Ltd,ACC-1066,PUN-2066,Pune Factory,2024-02-26,2024-03-25,5248.77,kWh,Industrial-HT,MSEDCL,INV-5066,2024-03-30
+T001,Tata Manufacturing Ltd,ACC-1067,GUJ-2067,Gujarat Unit,2024-05-10,2024-06-07,8691.78,kVAh,Industrial-HT,Torrent Power,INV-5067,2024-06-12
+T001,Tata Manufacturing Ltd,ACC-1068,PUN-2068,Pune Factory,2024-05-25,2024-06-25,7677.61,kVAh,Industrial-HT,MSEDCL,INV-5068,2024-06-30
+T001,Tata Manufacturing Ltd,ACC-1069,DEL-2069,Delhi Warehouse,2024-03-04,2024-04-04,6183.59,kWh,Commercial-LT,BSES,INV-5069,2024-04-09
+T001,Tata Manufacturing Ltd,ACC-1070,PUN-2070,Pune Factory,2024-04-14,2024-05-14,12362.92,kWh,Industrial-HT,MSEDCL,INV-5070,2024-05-19
+T001,Tata Manufacturing Ltd,ACC-1071,PUN-2071,Pune Factory,2024-04-10,2024-05-08,8270.27,kWh,Industrial-HT,MSEDCL,INV-5071,2024-05-13
+T001,Tata Manufacturing Ltd,ACC-1072,DEL-2072,Delhi Warehouse,2024-02-16,2024-03-17,14448.17,kWh,Commercial-LT,BSES,INV-5072,2024-03-22
+T001,Tata Manufacturing Ltd,ACC-1073,GUJ-2073,Gujarat Unit,2024-02-19,2024-03-18,9991.95,kVAh,Industrial-HT,Torrent Power,INV-5073,2024-03-23
+T001,Tata Manufacturing Ltd,ACC-1074,DEL-2074,Delhi Warehouse,2024-04-27,2024-05-26,8877.63,kWh,Commercial-LT,BSES,INV-5074,2024-05-31
+T001,Tata Manufacturing Ltd,ACC-1075,GUJ-2075,Gujarat Unit,2024-04-05,2024-05-03,11989.63,kWh,Industrial-HT,Torrent Power,INV-5075,2024-05-08
+T001,Tata Manufacturing Ltd,ACC-1076,GUJ-2076,Gujarat Unit,2024-04-04,2024-05-02,11215.54,kWh,Industrial-HT,Torrent Power,INV-5076,2024-05-07
+T001,Tata Manufacturing Ltd,ACC-1077,DEL-2077,Delhi Warehouse,2024-02-28,2024-03-30,9540.66,kWh,Commercial-LT,BSES,INV-5077,2024-04-04
+T001,Tata Manufacturing Ltd,ACC-1078,GUJ-2078,Gujarat Unit,2024-01-11,2024-02-10,14984.81,kVAh,Industrial-HT,Torrent Power,INV-5078,2024-02-15
+T001,Tata Manufacturing Ltd,ACC-1079,GUJ-2079,Gujarat Unit,2024-02-17,2024-03-17,9716.41,kVAh,Industrial-HT,Torrent Power,INV-5079,2024-03-22
+T001,Tata Manufacturing Ltd,ACC-1080,DEL-2080,Delhi Warehouse,2024-01-15,2024-02-14,9301.15,kWh,Commercial-LT,BSES,INV-5080,2024-02-19
+T001,Tata Manufacturing Ltd,ACC-1081,MUM-2081,Mumbai Plant,2024-03-15,2024-04-13,13623.31,kWh,Industrial-HT,Tata Power,INV-5081,2024-04-18
+T001,Tata Manufacturing Ltd,ACC-1082,GUJ-2082,Gujarat Unit,2024-05-23,2024-06-20,9186.25,kVAh,Industrial-HT,Torrent Power,INV-5082,2024-06-25
+T001,Tata Manufacturing Ltd,ACC-1083,GUJ-2083,Gujarat Unit,2024-05-27,2024-06-24,6557.32,kWh,Industrial-HT,Torrent Power,INV-5083,2024-06-29
+T001,Tata Manufacturing Ltd,ACC-1084,GUJ-2084,Gujarat Unit,2024-03-31,2024-04-29,9893.27,kWh,Industrial-HT,Torrent Power,INV-5084,2024-05-04
+T001,Tata Manufacturing Ltd,ACC-1085,GUJ-2085,Gujarat Unit,2024-04-14,2024-05-13,14061.09,kWh,Industrial-HT,Torrent Power,INV-5085,2024-05-18
+T001,Tata Manufacturing Ltd,ACC-1086,PUN-2086,Pune Factory,2024-02-04,2024-03-05,6833.37,kWh,Industrial-HT,MSEDCL,INV-5086,2024-03-10
+T001,Tata Manufacturing Ltd,ACC-1087,PUN-2087,Pune Factory,2024-03-14,2024-04-12,8697.04,kWh,Industrial-HT,MSEDCL,INV-5087,2024-04-17
+T001,Tata Manufacturing Ltd,ACC-1088,PUN-2088,Pune Factory,2024-05-19,2024-06-18,8381.74,kWh,Industrial-HT,MSEDCL,INV-5088,2024-06-23
+T001,Tata Manufacturing Ltd,ACC-1089,GUJ-2089,Gujarat Unit,2024-01-06,2024-02-05,9921.86,kVAh,Industrial-HT,Torrent Power,INV-5089,2024-02-10
+T001,Tata Manufacturing Ltd,ACC-1090,DEL-2090,Delhi Warehouse,2024-04-05,2024-05-06,11291.01,kWh,Commercial-LT,BSES,INV-5090,2024-05-11
+T001,Tata Manufacturing Ltd,ACC-1091,DEL-2091,Delhi Warehouse,2024-02-26,2024-03-25,14628.17,kVAh,Commercial-LT,BSES,INV-5091,2024-03-30
+T001,Tata Manufacturing Ltd,ACC-1092,GUJ-2092,Gujarat Unit,2024-05-17,2024-06-16,11791.79,kWh,Industrial-HT,Torrent Power,INV-5092,2024-06-21
+T001,Tata Manufacturing Ltd,ACC-1093,MUM-2093,Mumbai Plant,2024-02-14,2024-03-14,6078.11,kVAh,Industrial-HT,Tata Power,INV-5093,2024-03-19
+T001,Tata Manufacturing Ltd,ACC-1094,DEL-2094,Delhi Warehouse,2024-03-08,2024-04-05,6320.88,kVAh,Commercial-LT,BSES,INV-5094,2024-04-10
+T001,Tata Manufacturing Ltd,ACC-1095,PUN-2095,Pune Factory,2024-01-16,2024-02-14,12378.57,kVAh,Industrial-HT,MSEDCL,INV-5095,2024-02-19
+T001,Tata Manufacturing Ltd,ACC-1096,PUN-2096,Pune Factory,2024-01-25,2024-02-22,7869.58,kVAh,Industrial-HT,MSEDCL,INV-5096,2024-02-27
+T001,Tata Manufacturing Ltd,ACC-1097,PUN-2097,Pune Factory,2024-01-21,2024-02-21,13299.33,kVAh,Industrial-HT,MSEDCL,INV-5097,2024-02-26
+T001,Tata Manufacturing Ltd,ACC-1098,PUN-2098,Pune Factory,2024-03-25,2024-04-24,9704.12,kVAh,Industrial-HT,MSEDCL,INV-5098,2024-04-29
+T001,Tata Manufacturing Ltd,ACC-1099,PUN-2099,Pune Factory,2024-03-31,2024-04-29,10489.04,kWh,Industrial-HT,MSEDCL,INV-5099,2024-05-04
+T001,Tata Manufacturing Ltd,ACC-1100,MUM-2100,Mumbai Plant,2024-03-08,2024-04-07,9821.71,UNKNOWN,Industrial-HT,Tata Power,INV-5100,2024-04-12
+T001,Tata Manufacturing Ltd,ACC-1101,MUM-2101,Mumbai Plant,2024-04-07,2024-05-07,0.0,kVAh,Industrial-HT,Tata Power,INV-5101,2024-05-12
+T001,Tata Manufacturing Ltd,ACC-1102,DEL-2102,Delhi Warehouse,2024-02-13,2024-03-15,13547.69,kVAh,Commercial-LT,BSES,INV-5102,2024-03-20
+T001,Tata Manufacturing Ltd,ACC-1103,DEL-2103,Delhi Warehouse,2024-02-28,2024-03-29,6065.48,kVAh,Commercial-LT,BSES,INV-5103,2024-04-03
+T001,Tata Manufacturing Ltd,ACC-1104,GUJ-2104,Gujarat Unit,2024-02-16,2024-03-15,11214.08,kVAh,Industrial-HT,Torrent Power,INV-5104,2024-03-20
+T001,Tata Manufacturing Ltd,ACC-1105,MUM-2105,Mumbai Plant,2024-02-28,2024-03-28,8524.0,kWh,Industrial-HT,Tata Power,INV-5105,2024-04-02
+T001,Tata Manufacturing Ltd,ACC-1106,GUJ-2106,Gujarat Unit,2024-03-12,2024-04-11,14840.13,kWh,Industrial-HT,Torrent Power,INV-5106,2024-04-16
+T001,Tata Manufacturing Ltd,ACC-1107,GUJ-2107,Gujarat Unit,2024-03-23,2024-04-21,12406.35,kVAh,Industrial-HT,Torrent Power,INV-5107,2024-04-26
+T001,Tata Manufacturing Ltd,ACC-1108,GUJ-2108,Gujarat Unit,2024-04-05,2024-05-03,16431.35,kWh,Industrial-HT,Torrent Power,INV-5108,2024-05-08
+T001,Tata Manufacturing Ltd,ACC-1109,DEL-2109,Delhi Warehouse,2024-02-13,2024-03-15,13406.88,kVAh,Commercial-LT,BSES,INV-5109,2024-03-20
+T001,Tata Manufacturing Ltd,ACC-1110,DEL-2110,Delhi Warehouse,2024-01-18,2024-02-15,7315.46,kVAh,Commercial-LT,BSES,INV-5110,2024-02-20
+T001,Tata Manufacturing Ltd,ACC-1111,GUJ-2111,Gujarat Unit,2024-03-09,2024-04-09,8285.01,kWh,Industrial-HT,Torrent Power,INV-5111,2024-04-14
+T001,Tata Manufacturing Ltd,ACC-1112,PUN-2112,Pune Factory,2024-04-30,2024-05-29,13695.8,kVAh,Industrial-HT,MSEDCL,INV-5112,2024-06-03
+T001,Tata Manufacturing Ltd,ACC-1113,DEL-2113,Delhi Warehouse,2024-03-09,2024-04-08,6166.56,kVAh,Commercial-LT,BSES,INV-5113,2024-04-13
+T001,Tata Manufacturing Ltd,ACC-1114,GUJ-2114,Gujarat Unit,2024-02-14,2024-03-13,14322.78,kVAh,Industrial-HT,Torrent Power,INV-5114,2024-03-18
+T001,Tata Manufacturing Ltd,ACC-1115,PUN-2115,Pune Factory,2024-02-07,2024-03-07,13144.47,kWh,Industrial-HT,MSEDCL,INV-5115,2024-03-12
+T001,Tata Manufacturing Ltd,ACC-1116,GUJ-2116,Gujarat Unit,2024-03-16,2024-04-13,7831.14,kVAh,Industrial-HT,Torrent Power,INV-5116,2024-04-18
+T001,Tata Manufacturing Ltd,ACC-1117,GUJ-2117,Gujarat Unit,2024-03-04,2024-04-01,7159.13,kWh,Industrial-HT,Torrent Power,INV-5117,2024-04-06
+T001,Tata Manufacturing Ltd,ACC-1118,DEL-2118,Delhi Warehouse,2024-02-03,2024-03-03,14249.08,kVAh,Commercial-LT,BSES,INV-5118,2024-03-08
+T001,Tata Manufacturing Ltd,ACC-1119,MUM-2119,Mumbai Plant,2024-03-29,2024-04-29,5559.7,kWh,Industrial-HT,Tata Power,INV-5119,2024-05-04
+T001,Tata Manufacturing Ltd,ACC-1079,GUJ-2079,Gujarat Unit,2024-02-17,2024-03-17,9716.41,kVAh,Industrial-HT,Torrent Power,INV-5079,2024-03-22
+T001,Tata Manufacturing Ltd,ACC-1047,DEL-2047,Delhi Warehouse,2024-05-17,2024-06-17,13358.77,kVAh,Commercial-LT,BSES,INV-5047,2024-06-22
+T001,Tata Manufacturing Ltd,ACC-1076,GUJ-2076,Gujarat Unit,2024-04-04,2024-05-02,11215.54,kWh,Industrial-HT,Torrent Power,INV-5076,2024-05-07
+T001,Tata Manufacturing Ltd,ACC-1028,MUM-2028,Mumbai Plant,2024-01-03,2024-02-01,13319.84,kWh,Industrial-HT,Tata Power,INV-5028,2024-02-06
+T001,Tata Manufacturing Ltd,ACC-1027,GUJ-2027,Gujarat Unit,2024-04-16,2024-05-16,7611.23,kVAh,Industrial-HT,Torrent Power,INV-5027,2024-05-21
