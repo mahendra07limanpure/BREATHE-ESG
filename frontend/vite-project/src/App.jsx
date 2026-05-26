@@ -1,122 +1,102 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useCallback, useState } from 'react'
+import AppShell from './components/layout/AppShell'
+import DashboardView from './components/dashboard/DashboardView'
+import UploadView from './components/upload/UploadView'
+import ReviewView from './components/review/ReviewView'
+import { useDashboard } from './hooks/useDashboard'
+import { useRecords } from './hooks/useRecords'
+import { useUpload } from './hooks/useUpload'
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [activeView, setActiveView] = useState('dashboard')
+  const [reviewPrefs, setReviewPrefs] = useState({ status: 'flagged', source: '' })
+
+  const { stats, co2, loading: dashLoading, error: dashError, refresh: refreshDashboard } =
+    useDashboard()
+  const { records, loading: recordsLoading, error: recordsError, actionId, load, approve, reject } =
+    useRecords()
+  const { loading: uploadLoading, error: uploadError, lastResult, upload, uploadSample, clearResult } =
+    useUpload()
+
+  const navigate = useCallback((view, prefs) => {
+    setActiveView(view)
+    if (prefs?.status !== undefined || prefs?.source !== undefined) {
+      setReviewPrefs({
+        status: prefs.status ?? 'flagged',
+        source: prefs.source ?? '',
+      })
+    }
+  }, [])
+
+  const handleIngestSuccess = useCallback(() => {
+    refreshDashboard()
+    setReviewPrefs({ status: 'flagged', source: '' })
+  }, [refreshDashboard])
+
+  const handleRecordAction = useCallback(async () => {
+    await refreshDashboard()
+  }, [refreshDashboard])
+
+  const wrappedApprove = useCallback(
+    async (id) => {
+      const ok = await approve(id)
+      if (ok) await handleRecordAction()
+      return ok
+    },
+    [approve, handleRecordAction]
+  )
+
+  const wrappedReject = useCallback(
+    async (id) => {
+      const ok = await reject(id)
+      if (ok) await handleRecordAction()
+      return ok
+    },
+    [reject, handleRecordAction]
+  )
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <AppShell
+      activeView={activeView}
+      onNavigate={navigate}
+      flaggedCount={stats?.flagged_records ?? 0}
+    >
+      {activeView === 'dashboard' && (
+        <DashboardView
+          stats={stats}
+          co2={co2}
+          loading={dashLoading}
+          error={dashError}
+          onRefresh={refreshDashboard}
+          onNavigate={navigate}
+        />
+      )}
 
-      <div className="ticks"></div>
+      {activeView === 'upload' && (
+        <UploadView
+          loading={uploadLoading}
+          error={uploadError}
+          lastResult={lastResult}
+          onUpload={upload}
+          onUploadSample={uploadSample}
+          onClearResult={clearResult}
+          onIngestSuccess={handleIngestSuccess}
+        />
+      )}
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      {activeView === 'review' && (
+        <ReviewView
+          records={records}
+          loading={recordsLoading}
+          error={recordsError}
+          actionId={actionId}
+          initialStatus={reviewPrefs.status}
+          initialSource={reviewPrefs.source}
+          onLoad={load}
+          onApprove={wrappedApprove}
+          onReject={wrappedReject}
+        />
+      )}
+    </AppShell>
   )
 }
-
-export default App
