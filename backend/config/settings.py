@@ -23,12 +23,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-b)i1d%txk%+-r04b_9$5x%8$q%^%522arq15pt5w+1)m2njfg*'
+# In production, provide DJANGO_SECRET_KEY (or SECRET_KEY) via env.
+SECRET_KEY = os.getenv(
+    "DJANGO_SECRET_KEY",
+    os.getenv("SECRET_KEY", "django-insecure-b)i1d%txk%+-r04b_9$5x%8$q%^%522arq15pt5w+1)m2njfg*"),
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "True").strip().lower() in ("1", "true", "yes", "y", "on")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    h.strip()
+    for h in os.getenv("ALLOWED_HOSTS", "").split(",")
+    if h.strip()
+]
+
+if not ALLOWED_HOSTS and DEBUG:
+    # Local development convenience
+    ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -41,11 +53,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'corsheaders',
     'ingestion',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -124,3 +138,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# CORS (needed when frontend runs on a different origin like Vercel)
+cors_origins_raw = os.getenv("CORS_ALLOWED_ORIGINS", "")
+CORS_ALLOWED_ORIGINS = [
+    o.strip() for o in cors_origins_raw.split(",") if o.strip()
+]
+CORS_ALLOW_ALL_ORIGINS = False

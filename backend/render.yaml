@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: breathe-esg-backend
+    runtime: python
+    plan: free
+    buildCommand: if [ -f requirements.txt ]; then pip install -r requirements.txt; else cd backend && pip install -r requirements.txt; fi
+    preDeployCommand: if [ -f manage.py ]; then python3 manage.py migrate; else cd backend && python3 manage.py migrate; fi
+    startCommand: if [ -f manage.py ]; then gunicorn config.wsgi:application --bind 0.0.0.0:$PORT; else cd backend && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT; fi
+    # Database + CORS + secret values should be set as environment variables
+    # in the Render dashboard (do not hardcode secrets into this file).
+

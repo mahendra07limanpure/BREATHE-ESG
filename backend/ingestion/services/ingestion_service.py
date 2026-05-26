@@ -1,7 +1,7 @@
 import os
 import logging
 import pandas as pd
-
+import math
 from django.db import transaction
 
 from ingestion.models import (
@@ -105,6 +105,33 @@ def check_duplicate_batch(file_name, source_type):
         return True, existing.id
     return False, None
 
+# =====================================================
+# CLEAN JSON
+# Replaces NaN with None for PostgreSQL JSONB
+# =====================================================
+
+def clean_json_data(data):
+
+    if isinstance(data, dict):
+
+        return {
+            k: clean_json_data(v)
+            for k, v in data.items()
+        }
+
+    elif isinstance(data, list):
+
+        return [
+            clean_json_data(v)
+            for v in data
+        ]
+
+    elif isinstance(data, float):
+
+        if math.isnan(data):
+            return None
+
+    return data
 
 # =====================================================
 # BUILD EMISSION RECORD
@@ -153,7 +180,9 @@ def build_record(row, upload_batch):
             is_locked           = False,
 
             # original row verbatim
-            raw_data            = row.get("raw_data") or {},
+            raw_data = clean_json_data(
+    row.get("raw_data") or {}
+),
         )
         return (record, False, None)
 

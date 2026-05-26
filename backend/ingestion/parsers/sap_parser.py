@@ -154,7 +154,7 @@ def get_site_name(werks_code):
     if not werks_code:
         return ""
     try:
-        from .models import PlantMaster
+        from ingestion.models import PlantMaster
         plant = PlantMaster.objects.filter(
             werks=str(werks_code).strip()
         ).first()

@@ -59,4 +59,16 @@ Pre-generated CSV files in `sample_data/`:
 - **Backend:** Render (PostgreSQL + Gunicorn)
 - **Frontend:** Vercel (React + Vite)
 
-See README sections above for detailed setup & deployment instructions.
+### Backend deployment (Render)
+1. Create a Render PostgreSQL database and copy its connection details into backend environment variables.
+2. Deploy the Django backend using `backend/render.yaml` / `backend/Procfile`.
+3. Set these environment variables on Render:
+   - `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`
+   - `SECRET_KEY` (or `DJANGO_SECRET_KEY`)
+   - `DEBUG` (set `False` in production)
+   - `ALLOWED_HOSTS` (comma-separated, e.g. `your-render-url.com`)
+   - `CORS_ALLOWED_ORIGINS` (comma-separated origins, include your Vercel domain)
+4. `python manage.py migrate` runs automatically via `preDeployCommand`, including the `PlantMaster` seed migration.
+
+After deployment, your backend base URL will be:
+`<render-service-domain>/api`
