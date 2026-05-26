@@ -1,3 +1,152 @@
 from django.db import models
+from django.db.models import Sum
 
-# Create your models here.
+
+# ─────────────────────────────────────────────
+# TABLE 1: UploadBatch
+# Tracks which file each row came from and when
+# ─────────────────────────────────────────────
+class UploadBatch(models.Model):
+
+    SOURCE_CHOICES = [
+        ("sap_fuel",    "SAP Fuel & Procurement"),
+        ("electricity", "Electricity"),
+        ("travel",      "Corporate Travel"),
+    ]
+
+    source_type  = models.CharField(max_length=30, choices=SOURCE_CHOICES)
+    file_name    = models.CharField(max_length=255)
+    uploaded_by  = models.CharField(max_length=255, default="analyst")
+    uploaded_at  = models.DateTimeField(auto_now_add=True)
+    total_rows   = models.IntegerField(default=0)
+    flagged_rows = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.source_type} — {self.file_name}"
+
+
+# ─────────────────────────────────────────────
+# TABLE 2: EmissionRecord   ← CORE TABLE
+# One row per line of ingested CSV data
+# ─────────────────────────────────────────────
+class EmissionRecord(models.Model):
+
+    SOURCE_CHOICES = [
+        ("sap_fuel",    "SAP Fuel & Procurement"),
+        ("electricity", "Electricity"),
+        ("travel",      "Corporate Travel"),
+    ]
+
+    SCOPE_CHOICES = [
+        ("scope_1", "Scope 1 — Direct fuel combustion"),
+        ("scope_2", "Scope 2 — Purchased electricity"),
+        ("scope_3", "Scope 3 — Business travel"),
+    ]
+
+    STATUS_CHOICES = [
+        ("pending",  "Pending review"),
+        ("flagged",  "Flagged — needs attention"),
+        ("approved", "Approved — locked for audit"),
+        ("rejected", "Rejected — excluded from totals"),
+    ]
+
+    # ── Where this row came from ──────────────
+    upload_batch = models.ForeignKey(
+        UploadBatch,
+        on_delete=models.CASCADE,
+        related_name="records",
+        null=True
+    )
+    source_type  = models.CharField(max_length=30, choices=SOURCE_CHOICES)
+    scope        = models.CharField(max_length=10, choices=SCOPE_CHOICES)
+
+    # ── What the activity was ─────────────────
+    activity_type = models.CharField(max_length=255)  # diesel / electricity / flight
+    site_name     = models.CharField(max_length=255, blank=True)
+    record_date   = models.DateField()
+
+    # ── Raw values exactly as in the CSV ─────
+    quantity_raw = models.FloatField()
+    models.CharField(max_length=100)
+    unit_raw     = models.CharField(max_length=50)   # GAL, LTRS, kVAh — as uploaded
+
+    # ── After your parser normalises them ────
+    quantity_normalised = models.FloatField()
+    unit_normalised     = models.CharField(max_length=50)  # L, kWh, km — standard
+
+    # ── CO2 calculation ───────────────────────
+    emission_factor = models.FloatField()   # kg CO2 per normalised unit
+    co2_kg          = models.FloatField()   # quantity_normalised × emission_factor
+
+    # ── Review status ─────────────────────────
+    status      = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="pending"
+    )
+    flag_reason = models.TextField(blank=True, null=True)
+    is_locked   = models.BooleanField(default=False)
+
+    # ── Original row kept for traceability ───
+    raw_data   = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.source_type} | {self.activity_type} | {self.record_date} | {self.status}"
+
+    # ── Approve / Reject actions ──────────────
+    def approve(self):
+        self.status    = "approved"
+        self.is_locked = True
+        self.save()
+
+    def reject(self):
+        self.status = "rejected"
+        self.save()
+
+
+# ─────────────────────────────────────────────
+# TABLE 3: AuditLog
+# Insert-only — every approve/reject/edit logged
+# ─────────────────────────────────────────────
+class AuditLog(models.Model):
+
+    ACTION_CHOICES = [
+        ("approved", "Approved"),
+        ("rejected", "Rejected"),
+        ("edited",   "Edited"),
+        ("flagged",  "Auto-flagged on ingest"),
+    ]
+
+    record       = models.ForeignKey(
+        EmissionRecord,
+        on_delete=models.CASCADE,
+        related_name="audit_logs"
+    )
+    action       = models.CharField(max_length=20, choices=ACTION_CHOICES)
+    performed_by = models.CharField(max_length=255, default="analyst")
+    old_value    = models.TextField(blank=True, null=True)
+    new_value    = models.TextField(blank=True, null=True)
+    note         = models.TextField(blank=True)
+    timestamp    = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["timestamp"]
+
+    def __str__(self):
+        return f"{self.action} on #{self.record_id} at {self.timestamp}"
+
+
+# ─────────────────────────────────────────────
+# TABLE 4: PlantMaster
+# SAP WERKS code → readable site name
+# ─────────────────────────────────────────────
+class PlantMaster(models.Model):
+    werks     = models.CharField(max_length=10, unique=True)
+    site_name = models.CharField(max_length=255)
+    city      = models.CharField(max_length=100, blank=True)
+    state     = models.CharField(max_length=100, blank=True)
+
+    def __str__(self):
+        return f"{self.werks} → {self.site_name}"
