@@ -67,7 +67,6 @@ class EmissionRecord(models.Model):
 
     # ── Raw values exactly as in the CSV ─────
     quantity_raw = models.FloatField()
-    models.CharField(max_length=100)
     unit_raw     = models.CharField(max_length=50)   # GAL, LTRS, kVAh — as uploaded
 
     # ── After your parser normalises them ────
@@ -96,14 +95,53 @@ class EmissionRecord(models.Model):
         return f"{self.source_type} | {self.activity_type} | {self.record_date} | {self.status}"
 
     # ── Approve / Reject actions ──────────────
-    def approve(self):
+    def approve(self, performed_by="analyst", note=""):
+        """Approve record and create audit entry."""
         self.status    = "approved"
         self.is_locked = True
         self.save()
 
-    def reject(self):
+        AuditLog.objects.create(
+            record       = self,
+            action       = "approved",
+            performed_by = performed_by,
+            old_value    = "pending" if self.flag_reason else "pending",
+            new_value    = "approved",
+            note         = note or "Analyst approved record",
+        )
+
+    def reject(self, performed_by="analyst", note=""):
+        """Reject record and create audit entry."""
+        old_status = self.status
         self.status = "rejected"
         self.save()
+
+        AuditLog.objects.create(
+            record       = self,
+            action       = "rejected",
+            performed_by = performed_by,
+            old_value    = old_status,
+            new_value    = "rejected",
+            note         = note or "Analyst rejected record",
+        )
+
+    def edit_field(self, field_name, new_value, performed_by="analyst", note=""):
+        """Edit a field and create audit entry. Locked records cannot be edited."""
+        if self.is_locked:
+            raise ValueError("Cannot edit a locked/approved record")
+
+        old_value = getattr(self, field_name, None)
+        setattr(self, field_name, new_value)
+        self.save()
+
+        AuditLog.objects.create(
+            record       = self,
+            action       = "edited",
+            performed_by = performed_by,
+            old_value    = str(old_value),
+            new_value    = str(new_value),
+            note         = note or f"Edited {field_name}",
+        )
 
 
 # ─────────────────────────────────────────────

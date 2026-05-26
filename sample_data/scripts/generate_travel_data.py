@@ -209,7 +209,7 @@ for i in range(TOTAL_ROWS):
         "department":
             employee["department"],
 
-        "expense_type":
+        "category":
             expense_type,
 
         "trip_date":
@@ -223,7 +223,7 @@ for i in range(TOTAL_ROWS):
 
         "nights": "",
 
-        "booking_class": "",
+        "cabin_class": "",
 
         "vendor_name": "",
 
@@ -270,7 +270,7 @@ for i in range(TOTAL_ROWS):
             "distance_km":
                 flight["distance_km"],
 
-            "booking_class":
+            "cabin_class":
                 booking_class,
 
             "vendor_name":
