@@ -119,7 +119,7 @@ export default function App() {
         />
       )}
 
-      {/* {activeView === 'audit' && <AuditReportView />} */}
+      {activeView === 'audit' && <AuditReportView />}
     </AppShell>
   )
 }

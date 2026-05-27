@@ -4,7 +4,7 @@ from datetime import datetime
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Sum
+from django.db.models import Sum, Count
 
 from ingestion.models import EmissionRecord, UploadBatch, AuditLog
 from ingestion.services.ingestion_service import ingest_file
@@ -25,6 +25,7 @@ def upload_file(request):
     file_obj = request.FILES['file']
     source_type = request.POST.get('source_type')
     uploaded_by = request.POST.get('uploaded_by', 'analyst')
+    original_filename = file_obj.name  # Preserve original filename for duplicate detection
 
     # Save file temporarily
     import tempfile
@@ -36,7 +37,7 @@ def upload_file(request):
         tmp_path = tmp.name
 
     try:
-        result = ingest_file(tmp_path, source_type, uploaded_by)
+        result = ingest_file(tmp_path, source_type, uploaded_by, original_filename=original_filename)
         return JsonResponse(result, status=200)
     except ValueError as e:
         return JsonResponse({"error": str(e)}, status=400)
@@ -50,20 +51,35 @@ def upload_file(request):
 
 @require_http_methods(["GET"])
 def review_records(request):
-    """Get records pending review (status='flagged' or 'pending')."""
-    source_type = request.GET.get('source_type')
-    status = request.GET.get('status', 'pending')
+    """
+    Get records pending review.
+    
+    Query params:
+    - source_type: filter by source (sap_fuel, electricity, travel)
+    - status: single status or comma-separated list (pending, flagged, approved, rejected)
+    - limit: max records to return (default: 50)
+    
+    Example: GET /api/review/?status=flagged,rejected&source_type=travel
+    """
+    source_type = request.GET.get('source_type', '')
+    status_param = request.GET.get('status', 'pending')
     limit = int(request.GET.get('limit', 50))
+
+    logger.info(f"review_records called: source_type={source_type}, status_param={status_param}, limit={limit}")
 
     query = EmissionRecord.objects.all()
 
     if source_type:
         query = query.filter(source_type=source_type)
 
-    if status:
-        query = query.filter(status=status)
+    # Handle multiple statuses (comma-separated or single value)
+    if status_param:
+        statuses = [s.strip() for s in status_param.split(',')]
+        query = query.filter(status__in=statuses)
 
     records = query.order_by('created_at')[:limit]
+    
+    logger.info(f"Query returned {len(records)} records")
 
     data = []
     for r in records:
@@ -85,6 +101,60 @@ def review_records(request):
         })
 
     return JsonResponse({"records": data, "count": len(data)}, status=200)
+
+
+@require_http_methods(["GET"])
+def debug_records(request):
+    """Debug endpoint to see record counts by status."""
+    from django.db.models import Count
+    
+    # Get counts by status
+    status_counts = (
+        EmissionRecord.objects.values('status')
+        .annotate(count=Count('id'))
+        .order_by('status')
+    )
+    
+    # Get all statuses and their records
+    status_data = {}
+    for status_choice in EmissionRecord.STATUS_CHOICES:
+        status_id = status_choice[0]
+        count = EmissionRecord.objects.filter(status=status_id).count()
+        status_data[status_id] = count
+    
+    # Get a sample of flagged records
+    flagged_sample = EmissionRecord.objects.filter(status='flagged').values(
+        'id', 'source_type', 'activity_type', 'status', 'flag_reason'
+    )[:5]
+    
+    return JsonResponse({
+        "total_records": EmissionRecord.objects.count(),
+        "status_counts": status_data,
+        "flagged_sample": list(flagged_sample),
+    }, status=200)
+
+
+@csrf_exempt
+@require_http_methods(["DELETE"])
+def clear_all_data(request):
+    """Clear all ingestion data - use with caution!"""
+    logger.warning("CLEARING ALL DATA - EmissionRecords, UploadBatches, and AuditLogs")
+    
+    deleted_records, _ = EmissionRecord.objects.all().delete()
+    deleted_batches, _ = UploadBatch.objects.all().delete()
+    deleted_audits, _ = AuditLog.objects.all().delete()
+    
+    logger.warning(
+        f"Deleted: {deleted_records} EmissionRecords, "
+        f"{deleted_batches} UploadBatches, {deleted_audits} AuditLogs"
+    )
+    
+    return JsonResponse({
+        "message": "All data cleared",
+        "deleted_records": deleted_records,
+        "deleted_batches": deleted_batches,
+        "deleted_audits": deleted_audits,
+    }, status=200)
 
 
 @csrf_exempt

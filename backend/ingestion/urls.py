@@ -4,6 +4,8 @@ from ingestion import views
 urlpatterns = [
     path('upload/', views.upload_file, name='upload_file'),
     path('records/review/', views.review_records, name='review_records'),
+    path('records/debug/', views.debug_records, name='debug_records'),
+    path('records/clear/', views.clear_all_data, name='clear_all_data'),
     path('records/approve-all/', views.approve_all_records, name='approve_all_records'),
     path('records/reject-all/', views.reject_all_records, name='reject_all_records'),
     path('records/<int:record_id>/approve/', views.approve_record, name='approve_record'),

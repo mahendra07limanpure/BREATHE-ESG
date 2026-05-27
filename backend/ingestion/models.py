@@ -88,6 +88,12 @@ class EmissionRecord(models.Model):
 
     # ── Original row kept for traceability ───
     raw_data   = models.JSONField()
+    row_hash   = models.CharField(
+        max_length=64,
+        db_index=True,
+        default='',
+        help_text='MD5 hash for duplicate detection'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

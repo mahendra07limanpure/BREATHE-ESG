@@ -2,6 +2,8 @@ import os
 import logging
 import pandas as pd
 import math
+import hashlib
+import json
 from django.db import transaction
 
 from ingestion.models import (
@@ -92,16 +94,18 @@ def safe_scope(value, source_type):
 
 # =====================================================
 # DUPLICATE BATCH CHECK
-# Warns if same filename + source_type already exists
+# Checks for duplicate batches by filename (primary)
+# and by content hash matching (secondary)
 # Returns (is_duplicate, existing_batch_id)
 # =====================================================
-def check_duplicate_batch(file_name, source_type, df=None):
+def check_duplicate_batch(file_name, source_type, parsed_rows=None):
     """
     Check for duplicate batches in two ways:
-    1. By filename (exact match)
-    2. By content (same source type + same row count within last 2 hours)
+    1. By filename (exact match) — primary check
+    2. By content hash matching (using row_hash) — fallback for same-file uploads
     
-    If df is provided, also check content similarity.
+    For parsers that do transformations (e.g., electricity apportionment),
+    we use row_hash comparison instead of row count.
     """
     from datetime import timedelta
     from django.utils import timezone
@@ -115,22 +119,32 @@ def check_duplicate_batch(file_name, source_type, df=None):
     if existing:
         return True, existing.id
     
-    # Check 2: Content similarity (same source + same row count within 2 hours)
-    if df is not None:
-        recent_cutoff = timezone.now() - timedelta(hours=2)
-        recent_batches = UploadBatch.objects.filter(
-            source_type=source_type,
-            uploaded_at__gte=recent_cutoff,
-        ).order_by("-uploaded_at")
+    # Check 2: Content hash matching (for same-file uploads)
+    # Generate hashes from current parsed rows
+    if parsed_rows:
+        current_hashes = {generate_row_hash(row) for row in parsed_rows}
         
-        for batch in recent_batches:
-            if batch.total_rows == len(df):
-                # Likely duplicate - same source, same row count, uploaded recently
+        # Look for existing records with same hashes (within last 24 hours)
+        cutoff = timezone.now() - timedelta(hours=24)
+        existing_records = EmissionRecord.objects.filter(
+            source_type=source_type,
+            created_at__gte=cutoff,
+            row_hash__in=current_hashes,
+        ).select_related('upload_batch')
+        
+        if existing_records.exists():
+            existing_batch = existing_records.first().upload_batch
+            matching_count = sum(
+                1 for row in parsed_rows 
+                if generate_row_hash(row) in {r.row_hash for r in existing_records}
+            )
+            # If most rows match existing batch, it's a duplicate
+            if matching_count >= len(parsed_rows) * 0.8:  # 80% match threshold
                 logger.warning(
-                    f"Potential duplicate detected: {source_type} with {len(df)} rows "
-                    f"(similar to batch #{batch.id} from {batch.uploaded_at})"
+                    f"Potential duplicate detected: {file_name} ({matching_count}/{len(parsed_rows)} rows match "
+                    f"batch #{existing_batch.id})"
                 )
-                return True, batch.id
+                return True, existing_batch.id
     
     return False, None
 
@@ -161,6 +175,32 @@ def clean_json_data(data):
             return None
 
     return data
+
+# =====================================================
+# GENERATE ROW HASH
+# Creates MD5 hash for duplicate detection
+# =====================================================
+def generate_row_hash(row):
+    """
+    Generates MD5 hash from key fields for duplicate detection.
+    Uses: source_type, activity_type, record_date, quantity_raw, 
+          unit_raw, site_name
+    """
+    try:
+        key_fields = {
+            'source_type': str(row.get('source_type', '')),
+            'activity_type': str(row.get('activity_type', '')),
+            'record_date': str(row.get('record_date', '')),
+            'quantity_raw': str(row.get('quantity_raw', '')),
+            'unit_raw': str(row.get('unit_raw', '')),
+            'site_name': str(row.get('site_name', '')),
+        }
+        hash_string = json.dumps(key_fields, sort_keys=True)
+        return hashlib.md5(hash_string.encode()).hexdigest()
+    except Exception as e:
+        logger.warning(f"Could not generate row hash: {e}")
+        return ''
+
 
 # =====================================================
 # BUILD EMISSION RECORD
@@ -212,6 +252,8 @@ def build_record(row, upload_batch):
             raw_data = clean_json_data(
     row.get("raw_data") or {}
 ),
+            # generate hash for duplicate detection
+            row_hash            = generate_row_hash(row),
         )
         return (record, False, None)
 
@@ -228,6 +270,7 @@ def ingest_file(
     source_type,
     uploaded_by="analyst",
     allow_duplicate=False,
+    original_filename=None,
 ):
     """
     Full ingestion pipeline for one uploaded CSV file.
@@ -262,23 +305,28 @@ def ingest_file(
         )
 
     # ── Step 2: check for duplicate upload ──────
-    file_name = os.path.basename(file_path)
+    # Use original filename for duplicate detection if provided
+    # (this preserves the uploaded filename instead of using temp filename)
+    file_name = original_filename if original_filename else os.path.basename(file_path)
+    
+    # Check 1: Quick filename match (before parsing)
+    existing_by_filename = UploadBatch.objects.filter(
+        file_name=file_name,
+        source_type=source_type,
+    ).order_by("-uploaded_at").first()
+    
+    if existing_by_filename and not allow_duplicate:
+        raise ValueError(
+            f"Duplicate data detected: {file_name} "
+            f"(already uploaded as batch #{existing_by_filename.id}). "
+            f"Pass allow_duplicate=True to upload again."
+        )
     
     # ── Step 3: load CSV ─────────────────────────
     df = load_csv(file_path)
 
     if df.empty:
         raise ValueError(f"CSV file '{file_name}' is empty.")
-    
-    # Now check for duplicates with content awareness
-    is_dup, dup_batch_id = check_duplicate_batch(file_name, source_type, df)
-
-    if is_dup and not allow_duplicate:
-        raise ValueError(
-            f"Duplicate data detected: {file_name} "
-            f"(similar to batch #{dup_batch_id}). "
-            f"Pass allow_duplicate=True to upload again."
-        )
 
     # ── Step 4: parse rows ───────────────────────
     parser = PARSER_MAPPING[source_type]
@@ -290,6 +338,17 @@ def ingest_file(
 
     if not parsed_rows:
         raise ValueError("Parser returned zero rows.")
+    
+    # Check 2: Content hash matching (after parsing)
+    # This catches same-file uploads even if parser transforms rows
+    is_dup, dup_batch_id = check_duplicate_batch(file_name, source_type, parsed_rows)
+
+    if is_dup and not allow_duplicate:
+        raise ValueError(
+            f"Duplicate data detected: {file_name} "
+            f"(similar to batch #{dup_batch_id}). "
+            f"Pass allow_duplicate=True to upload again."
+        )
 
     # ── Step 5: everything in one transaction ────
     with transaction.atomic():
