@@ -95,7 +95,18 @@ def safe_scope(value, source_type):
 # Warns if same filename + source_type already exists
 # Returns (is_duplicate, existing_batch_id)
 # =====================================================
-def check_duplicate_batch(file_name, source_type):
+def check_duplicate_batch(file_name, source_type, df=None):
+    """
+    Check for duplicate batches in two ways:
+    1. By filename (exact match)
+    2. By content (same source type + same row count within last 2 hours)
+    
+    If df is provided, also check content similarity.
+    """
+    from datetime import timedelta
+    from django.utils import timezone
+    
+    # Check 1: Exact filename match
     existing = UploadBatch.objects.filter(
         file_name=file_name,
         source_type=source_type,
@@ -103,6 +114,24 @@ def check_duplicate_batch(file_name, source_type):
 
     if existing:
         return True, existing.id
+    
+    # Check 2: Content similarity (same source + same row count within 2 hours)
+    if df is not None:
+        recent_cutoff = timezone.now() - timedelta(hours=2)
+        recent_batches = UploadBatch.objects.filter(
+            source_type=source_type,
+            uploaded_at__gte=recent_cutoff,
+        ).order_by("-uploaded_at")
+        
+        for batch in recent_batches:
+            if batch.total_rows == len(df):
+                # Likely duplicate - same source, same row count, uploaded recently
+                logger.warning(
+                    f"Potential duplicate detected: {source_type} with {len(df)} rows "
+                    f"(similar to batch #{batch.id} from {batch.uploaded_at})"
+                )
+                return True, batch.id
+    
     return False, None
 
 # =====================================================
@@ -234,20 +263,22 @@ def ingest_file(
 
     # ── Step 2: check for duplicate upload ──────
     file_name = os.path.basename(file_path)
-    is_dup, dup_batch_id = check_duplicate_batch(file_name, source_type)
-
-    if is_dup and not allow_duplicate:
-        raise ValueError(
-            f"File '{file_name}' was already uploaded "
-            f"(batch #{dup_batch_id}). "
-            f"Pass allow_duplicate=True to upload again."
-        )
-
+    
     # ── Step 3: load CSV ─────────────────────────
     df = load_csv(file_path)
 
     if df.empty:
         raise ValueError(f"CSV file '{file_name}' is empty.")
+    
+    # Now check for duplicates with content awareness
+    is_dup, dup_batch_id = check_duplicate_batch(file_name, source_type, df)
+
+    if is_dup and not allow_duplicate:
+        raise ValueError(
+            f"Duplicate data detected: {file_name} "
+            f"(similar to batch #{dup_batch_id}). "
+            f"Pass allow_duplicate=True to upload again."
+        )
 
     # ── Step 4: parse rows ───────────────────────
     parser = PARSER_MAPPING[source_type]

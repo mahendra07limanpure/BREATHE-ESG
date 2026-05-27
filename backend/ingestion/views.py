@@ -1,5 +1,6 @@
 import json
 import logging
+from datetime import datetime
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
@@ -115,6 +116,80 @@ def approve_record(request, record_id):
 
 @csrf_exempt
 @require_http_methods(["PATCH"])
+def approve_all_records(request):
+    """Approve all pending records (bulk approval)."""
+    try:
+        data = json.loads(request.body)
+        performed_by = data.get('performed_by', 'analyst')
+        note = data.get('note', 'Bulk approved by analyst')
+        status_filter = data.get('status', 'pending')  # Which status to approve: pending, flagged, or both
+    except:
+        performed_by = 'analyst'
+        note = 'Bulk approved by analyst'
+        status_filter = 'pending'
+
+    # Get all records with the specified status that aren't locked
+    query = EmissionRecord.objects.filter(is_locked=False)
+    
+    if status_filter == 'all':
+        # Approve all non-locked records (both pending and flagged)
+        query = query.filter(status__in=['pending', 'flagged'])
+    else:
+        # Approve only pending or only flagged
+        query = query.filter(status=status_filter)
+
+    count = query.count()
+    
+    # Approve each record
+    for record in query:
+        record.approve(performed_by=performed_by, note=note)
+
+    return JsonResponse({
+        "approved_count": count,
+        "message": f"Approved {count} record(s)",
+        "status": "success"
+    }, status=200)
+
+
+@csrf_exempt
+@require_http_methods(["PATCH"])
+def reject_all_records(request):
+    """Reject all flagged records (bulk rejection)."""
+    try:
+        data = json.loads(request.body)
+        performed_by = data.get('performed_by', 'analyst')
+        note = data.get('note', 'Bulk rejected by analyst - flagged anomalies')
+        status_filter = data.get('status', 'flagged')  # Which status to reject
+    except:
+        performed_by = 'analyst'
+        note = 'Bulk rejected by analyst - flagged anomalies'
+        status_filter = 'flagged'
+
+    # Get all records with the specified status that aren't locked
+    query = EmissionRecord.objects.filter(is_locked=False)
+    
+    if status_filter == 'all':
+        # Reject all non-locked records (both pending and flagged)
+        query = query.filter(status__in=['pending', 'flagged'])
+    else:
+        # Reject only flagged or only pending
+        query = query.filter(status=status_filter)
+
+    count = query.count()
+    
+    # Reject each record
+    for record in query:
+        record.reject(performed_by=performed_by, note=note)
+
+    return JsonResponse({
+        "rejected_count": count,
+        "message": f"Rejected {count} record(s)",
+        "status": "success"
+    }, status=200)
+
+
+@csrf_exempt
+@require_http_methods(["PATCH"])
 def reject_record(request, record_id):
     """Reject a single record."""
     try:
@@ -183,6 +258,60 @@ def audit_trail(request, record_id):
         })
 
     return JsonResponse({"record_id": record_id, "audit_log": data}, status=200)
+
+
+@require_http_methods(["GET"])
+def audit_report(request):
+    """Get comprehensive audit report with rejected records and timeline."""
+    # Get summary stats
+    total_records = EmissionRecord.objects.count()
+    rejected_records = EmissionRecord.objects.filter(status="rejected").count()
+    approved_records = EmissionRecord.objects.filter(status="approved").count()
+    flagged_records = EmissionRecord.objects.filter(status="flagged").count()
+    pending_records = EmissionRecord.objects.filter(status="pending").count()
+
+    # Get rejected records with details
+    rejected = EmissionRecord.objects.filter(status="rejected").order_by('-updated_at')[:1000]
+    rejected_data = []
+    for r in rejected:
+        rejected_data.append({
+            "id": r.id,
+            "source_type": r.source_type,
+            "activity_type": r.activity_type,
+            "record_date": r.record_date.isoformat(),
+            "quantity_normalised": r.quantity_normalised,
+            "unit_normalised": r.unit_normalised,
+            "co2_kg": r.co2_kg,
+            "flag_reason": r.flag_reason,
+            "updated_at": r.updated_at.isoformat() if r.updated_at else None,
+        })
+
+    # Get upload batches
+    batches = UploadBatch.objects.all().order_by('-uploaded_at')
+    batch_data = []
+    for batch in batches:
+        batch_data.append({
+            "id": batch.id,
+            "source_type": batch.source_type,
+            "file_name": batch.file_name,
+            "total_rows": batch.total_rows,
+            "flagged_rows": batch.flagged_rows,
+            "uploaded_by": batch.uploaded_by,
+            "uploaded_at": batch.uploaded_at.isoformat(),
+        })
+
+    return JsonResponse({
+        "summary": {
+            "total_records": total_records,
+            "rejected_records": rejected_records,
+            "approved_records": approved_records,
+            "flagged_records": flagged_records,
+            "pending_records": pending_records,
+        },
+        "rejected_details": rejected_data,
+        "upload_batches": batch_data,
+        "timestamp": datetime.now().isoformat(),
+    }, status=200)
 
 
 @require_http_methods(["GET"])

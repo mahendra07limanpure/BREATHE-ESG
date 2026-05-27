@@ -111,13 +111,17 @@ def resolve_distance(row):
     if raw_dist not in (None, ""):
         try:
             dist = float(raw_dist)
-            if dist <= 0:
+            # Check for NaN (empty CSV fields become NaN after pandas read)
+            if math.isnan(dist):
+                pass  # Fall through to IATA code resolution
+            elif dist <= 0:
                 return (None, "unknown",
                         "Distance is zero or negative — cannot calculate emissions")
-            if dist > 20000:
+            elif dist > 20000:
                 return (None, "unknown",
                         f"Distance {dist} km is implausibly high — possible data entry error")
-            return (dist, "csv", None)
+            else:
+                return (dist, "csv", None)
         except (ValueError, TypeError):
             pass
 
@@ -158,7 +162,8 @@ def resolve_cabin_class(row):
     """
     Returns (emission_factor_key, flag_note)
     """
-    cabin = str(row.get("cabin_class", "")).strip().lower()
+    # Try both 'cabin_class' and 'booking_class' field names
+    cabin = str(row.get("cabin_class") or row.get("booking_class", "")).strip().lower()
 
     if "business" in cabin:
         return ("flight_business", None)
@@ -193,14 +198,17 @@ def normalise_category(raw_category):
         "air":        "flight",
         "airplane":   "flight",
         "plane":      "flight",
+        "airfare":    "flight",
         "hotel":      "hotel",
         "accommodation": "hotel",
         "lodging":    "hotel",
+        "stay":       "hotel",
         "cab":        "cab",
         "taxi":       "cab",
         "uber":       "cab",
         "ola":        "cab",
         "ride":       "cab",
+        "ground transportation": "cab",
         "train":      "train",
         "rail":       "train",
         "bus":        "bus",
@@ -306,7 +314,8 @@ def parse_travel_row(row):
     """
 
     # ── Step 1: normalise category ──────────────
-    raw_category = row.get("category", "")
+    # Try both 'category' and 'expense_type' field names
+    raw_category = row.get("category") or row.get("expense_type", "")
     category, cat_known = normalise_category(raw_category)
 
     # ── Step 2: parse date ──────────────────────
@@ -361,6 +370,9 @@ def parse_travel_row(row):
         raw_dist = row.get("distance_km")
         try:
             dist    = float(raw_dist) if raw_dist not in (None, "") else None
+            # Check for NaN from pandas empty fields
+            if dist is not None and math.isnan(dist):
+                dist = None
         except (ValueError, TypeError):
             dist    = None
         qty_raw   = raw_dist

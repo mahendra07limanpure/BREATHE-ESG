@@ -56,8 +56,28 @@ export async function rejectRecord(recordId, note = 'Rejected via dashboard') {
   })
 }
 
+export async function approveAllRecords(status = 'pending', note = 'Bulk approved via dashboard') {
+  return request('/records/approve-all/', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ performed_by: 'analyst', status, note }),
+  })
+}
+
+export async function rejectAllRecords(status = 'flagged', note = 'Bulk rejected via dashboard - flagged anomalies') {
+  return request('/records/reject-all/', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ performed_by: 'analyst', status, note }),
+  })
+}
+
 export async function fetchAuditTrail(recordId) {
   return request(`/records/${recordId}/audit/`)
+}
+
+export async function getAuditReport() {
+  return request('/audit/report/')
 }
 
 export async function loadSampleCsv(samplePath, downloadName) {

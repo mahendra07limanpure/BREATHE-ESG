@@ -16,10 +16,16 @@ export default function ReviewView({
   initialSource = '',
   onLoad,
   onApprove,
+  onBulkApprove,
+  onBulkReject,
   onReject,
 }) {
   const [status, setStatus] = useState(initialStatus)
   const [sourceType, setSourceType] = useState(initialSource)
+  const [showBulkApproveDialog, setShowBulkApproveDialog] = useState(false)
+  const [showBulkRejectDialog, setShowBulkRejectDialog] = useState(false)
+  const [bulkApproving, setBulkApproving] = useState(false)
+  const [bulkRejecting, setBulkRejecting] = useState(false)
 
   useEffect(() => {
     setStatus(initialStatus)
@@ -28,6 +34,30 @@ export default function ReviewView({
   useEffect(() => {
     onLoad({ status, sourceType })
   }, [status, sourceType, onLoad])
+
+  const handleBulkApprove = async () => {
+    setBulkApproving(true)
+    try {
+      await onBulkApprove(status)
+      setShowBulkApproveDialog(false)
+      // Reload the records after bulk approval
+      await onLoad({ status, sourceType })
+    } finally {
+      setBulkApproving(false)
+    }
+  }
+
+  const handleBulkReject = async () => {
+    setBulkRejecting(true)
+    try {
+      await onBulkReject(status)
+      setShowBulkRejectDialog(false)
+      // Reload the records after bulk rejection
+      await onLoad({ status, sourceType })
+    } finally {
+      setBulkRejecting(false)
+    }
+  }
 
   const statusMeta = STATUS_OPTIONS.find((s) => s.id === status)
 
@@ -42,14 +72,38 @@ export default function ReviewView({
             Row-level review — approve clean rows or investigate flagged anomalies before audit lock.
           </p>
         </div>
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={() => onLoad({ status, sourceType })}
-          disabled={loading}
-        >
-          {loading ? <Spinner className="h-4 w-4" /> : 'Refresh'}
-        </Button>
+        <div className="flex gap-2">
+          {records.length > 0 && (
+            <>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setShowBulkApproveDialog(true)}
+                disabled={loading || bulkApproving || bulkRejecting}
+                className="bg-emerald-600 hover:bg-emerald-700"
+              >
+                {bulkApproving ? <Spinner className="h-4 w-4" /> : 'Approve All'}
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setShowBulkRejectDialog(true)}
+                disabled={loading || bulkApproving || bulkRejecting}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {bulkRejecting ? <Spinner className="h-4 w-4" /> : 'Reject All'}
+              </Button>
+            </>
+          )}
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => onLoad({ status, sourceType })}
+            disabled={loading}
+          >
+            {loading ? <Spinner className="h-4 w-4" /> : 'Refresh'}
+          </Button>
+        </div>
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -106,7 +160,13 @@ export default function ReviewView({
         />
       ) : (
         <>
-          <p className="text-sm text-slate-500">{records.length} record(s)</p>
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-slate-500">
+              Showing <strong>{records.length}</strong> {status} record(s)
+              {sourceType && <span> from {sourceType}</span>}
+              — bulk actions will affect <strong>all matching records in database</strong>
+            </p>
+          </div>
           <RecordTable
             records={records}
             actionId={actionId}
@@ -120,6 +180,92 @@ export default function ReviewView({
             onReject={onReject}
           />
         </>
+      )}
+
+      {showBulkApproveDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="w-full max-w-md rounded-lg bg-white shadow-lg">
+            <div className="border-b border-slate-200 px-6 py-4">
+              <h3 className="text-lg font-semibold text-slate-900">Approve all {status} records?</h3>
+            </div>
+            <div className="space-y-4 px-6 py-4">
+              <p className="text-sm text-slate-600">
+                This will approve and lock <strong>all {status} records</strong> in the database (displaying {records.length} on this page).
+              </p>
+              <p className="text-sm text-slate-500">
+                This action cannot be undone. All records will be locked for audit.
+              </p>
+            </div>
+            <div className="flex gap-3 border-t border-slate-200 px-6 py-4">
+              <button
+                type="button"
+                onClick={() => setShowBulkApproveDialog(false)}
+                disabled={bulkApproving}
+                className="flex-1 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleBulkApprove}
+                disabled={bulkApproving}
+                className="flex-1 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {bulkApproving ? (
+                  <>
+                    <Spinner className="h-4 w-4" />
+                    Approving...
+                  </>
+                ) : (
+                  'Approve All'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showBulkRejectDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="w-full max-w-md rounded-lg bg-white shadow-lg">
+            <div className="border-b border-slate-200 px-6 py-4">
+              <h3 className="text-lg font-semibold text-slate-900">Reject all {status} records?</h3>
+            </div>
+            <div className="space-y-4 px-6 py-4">
+              <p className="text-sm text-slate-600">
+                This will reject and exclude <strong>all {status} records</strong> in the database (displaying {records.length} on this page).
+              </p>
+              <p className="text-sm text-slate-500">
+                Rejected records will be locked and excluded from CO₂ calculations. This action cannot be undone.
+              </p>
+            </div>
+            <div className="flex gap-3 border-t border-slate-200 px-6 py-4">
+              <button
+                type="button"
+                onClick={() => setShowBulkRejectDialog(false)}
+                disabled={bulkRejecting}
+                className="flex-1 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleBulkReject}
+                disabled={bulkRejecting}
+                className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {bulkRejecting ? (
+                  <>
+                    <Spinner className="h-4 w-4" />
+                    Rejecting...
+                  </>
+                ) : (
+                  'Reject All'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

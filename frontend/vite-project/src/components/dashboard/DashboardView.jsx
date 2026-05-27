@@ -60,7 +60,7 @@ export default function DashboardView({
       </Card>
 
       {stats && (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <StatCard label="Total records" value={stats.total_records} />
           <StatCard label="Approved" value={stats.approved_records} accent="emerald" />
           <StatCard
@@ -74,6 +74,12 @@ export default function DashboardView({
             value={stats.flagged_records}
             accent="amber"
             subtext="Requires analyst attention"
+          />
+          <StatCard
+            label="Rejected"
+            value={stats.rejected_records}
+            accent="rose"
+            subtext="View audit trail"
           />
         </div>
       )}

@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { approveRecord, fetchRecords, rejectRecord } from '../api/client'
+import { approveRecord, approveAllRecords, rejectAllRecords, fetchRecords, rejectRecord } from '../api/client'
 
 export function useRecords() {
   const [records, setRecords] = useState([])
@@ -7,7 +7,7 @@ export function useRecords() {
   const [error, setError] = useState(null)
   const [actionId, setActionId] = useState(null)
 
-  const load = useCallback(async ({ sourceType = '', status = 'pending', limit = 100 } = {}) => {
+  const load = useCallback(async ({ sourceType = '', status = 'pending', limit = 1000 } = {}) => {
     setLoading(true)
     setError(null)
     try {
@@ -37,6 +37,36 @@ export function useRecords() {
     }
   }, [])
 
+  const bulkApprove = useCallback(async (status = 'pending') => {
+    setLoading(true)
+    setError(null)
+    try {
+      const result = await approveAllRecords(status)
+      setRecords([])  // Clear the list after bulk approval
+      return result
+    } catch (err) {
+      setError(err.message)
+      return null
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  const bulkReject = useCallback(async (status = 'flagged') => {
+    setLoading(true)
+    setError(null)
+    try {
+      const result = await rejectAllRecords(status)
+      setRecords([])  // Clear the list after bulk rejection
+      return result
+    } catch (err) {
+      setError(err.message)
+      return null
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
   const reject = useCallback(async (recordId) => {
     setActionId(recordId)
     try {
@@ -51,5 +81,5 @@ export function useRecords() {
     }
   }, [])
 
-  return { records, loading, error, actionId, load, approve, reject }
+  return { records, loading, error, actionId, load, approve, bulkApprove, bulkReject, reject }
 }

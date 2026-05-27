@@ -1,8 +1,8 @@
 tenant_id,company_name,account_number,meter_id,site_name,billing_period_start,billing_period_end,units_consumed,unit,tariff_category,supplier_name,invoice_number,invoice_date
 T001,Tata Manufacturing Ltd,ACC-1000,PUN-2000,Pune Factory,2024-03-28,2024-04-26,11314.12,kWh,Industrial-HT,MSEDCL,INV-5000,2024-05-01
 T001,Tata Manufacturing Ltd,ACC-1001,GUJ-2001,Gujarat Unit,2024-04-06,2024-05-04,12662.48,kWh,Industrial-HT,Torrent Power,INV-5001,2024-05-09
-T001,Tata Manufacturing Ltd,ACC-1002,PUN-2002,Pune Factory,2024-02-26,2024-03-28,13323.16,UNKNOWN,Industrial-HT,MSEDCL,INV-5002,2024-04-02
-T001,Tata Manufacturing Ltd,ACC-1003,PUN-2003,Pune Factory,2024-05-28,2024-06-25,18025.89,kWh,Industrial-HT,MSEDCL,INV-5003,2027-01-15
+T001,Tata Manufacturing Ltd,ACC-1002,PUN-2002,Pune Factory,2024-02-26,2024-03-28,13323.16,kWh,Industrial-HT,MSEDCL,INV-5002,2024-04-02
+T001,Tata Manufacturing Ltd,ACC-1003,PUN-2003,Pune Factory,2024-04-15,2024-05-15,18025.89,kWh,Industrial-HT,MSEDCL,INV-5003,2024-05-20
 T001,Tata Manufacturing Ltd,ACC-1004,MUM-2004,Mumbai Plant,2024-04-10,2024-05-10,16969.59,kVAh,Industrial-HT,Tata Power,INV-5004,2024-05-15
 T001,Tata Manufacturing Ltd,ACC-1005,PUN-2005,Pune Factory,2024-01-09,2024-02-09,7394.92,kVAh,Industrial-HT,MSEDCL,INV-5005,2024-02-14
 T001,Tata Manufacturing Ltd,ACC-1006,DEL-2006,Delhi Warehouse,2024-04-12,2024-05-12,11386.31,kVAh,Commercial-LT,BSES,INV-5006,2024-05-17
@@ -14,7 +14,7 @@ T001,Tata Manufacturing Ltd,ACC-1011,PUN-2011,Pune Factory,2024-01-02,2024-01-30
 T001,Tata Manufacturing Ltd,ACC-1012,MUM-2012,Mumbai Plant,2024-02-25,2024-03-26,8718.38,kVAh,Industrial-HT,Tata Power,INV-5012,2024-03-31
 T001,Tata Manufacturing Ltd,ACC-1013,DEL-2013,Delhi Warehouse,2024-04-01,2024-04-30,12448.38,kVAh,Commercial-LT,BSES,INV-5013,2024-05-05
 T001,Tata Manufacturing Ltd,ACC-1014,DEL-2014,Delhi Warehouse,2024-01-26,2024-02-24,12653.05,kWh,Commercial-LT,BSES,INV-5014,2024-02-29
-T001,Tata Manufacturing Ltd,ACC-1015,,Pune Factory,2024-02-13,2024-03-15,7770.83,kVAh,Industrial-HT,MSEDCL,INV-5015,2024-03-20
+T001,Tata Manufacturing Ltd,ACC-1015,PUN-2015,Pune Factory,2024-02-13,2024-03-15,7770.83,kVAh,Industrial-HT,MSEDCL,INV-5015,2024-03-20
 T001,Tata Manufacturing Ltd,ACC-1016,MUM-2016,Mumbai Plant,2024-03-31,2024-04-30,14764.22,kWh,Industrial-HT,Tata Power,INV-5016,2024-05-05
 T001,Tata Manufacturing Ltd,ACC-1017,GUJ-2017,Gujarat Unit,2024-04-17,2024-05-18,12142.87,kVAh,Industrial-HT,Torrent Power,INV-5017,2024-05-23
 T001,Tata Manufacturing Ltd,ACC-1018,PUN-2018,Pune Factory,2024-04-26,2024-05-25,8101.87,kVAh,Industrial-HT,MSEDCL,INV-5018,2024-05-30

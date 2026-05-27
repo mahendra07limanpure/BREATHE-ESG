@@ -44,4 +44,5 @@ export const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard' },
   { id: 'upload', label: 'Ingest data' },
   { id: 'review', label: 'Review records' },
+  { id: 'audit', label: 'Audit report' },
 ]

@@ -3,6 +3,7 @@ import AppShell from './components/layout/AppShell'
 import DashboardView from './components/dashboard/DashboardView'
 import UploadView from './components/upload/UploadView'
 import ReviewView from './components/review/ReviewView'
+import AuditReportView from './components/audit/AuditReportView'
 import { useDashboard } from './hooks/useDashboard'
 import { useRecords } from './hooks/useRecords'
 import { useUpload } from './hooks/useUpload'
@@ -13,7 +14,7 @@ export default function App() {
 
   const { stats, co2, loading: dashLoading, error: dashError, refresh: refreshDashboard } =
     useDashboard()
-  const { records, loading: recordsLoading, error: recordsError, actionId, load, approve, reject } =
+  const { records, loading: recordsLoading, error: recordsError, actionId, load, approve, bulkApprove, bulkReject, reject } =
     useRecords()
   const { loading: uploadLoading, error: uploadError, lastResult, upload, uploadSample, clearResult } =
     useUpload()
@@ -55,6 +56,24 @@ export default function App() {
     [reject, handleRecordAction]
   )
 
+  const wrappedBulkApprove = useCallback(
+    async (status) => {
+      const result = await bulkApprove(status)
+      if (result) await handleRecordAction()
+      return result
+    },
+    [bulkApprove, handleRecordAction]
+  )
+
+  const wrappedBulkReject = useCallback(
+    async (status) => {
+      const result = await bulkReject(status)
+      if (result) await handleRecordAction()
+      return result
+    },
+    [bulkReject, handleRecordAction]
+  )
+
   return (
     <AppShell
       activeView={activeView}
@@ -94,9 +113,13 @@ export default function App() {
           initialSource={reviewPrefs.source}
           onLoad={load}
           onApprove={wrappedApprove}
+          onBulkApprove={wrappedBulkApprove}
+          onBulkReject={wrappedBulkReject}
           onReject={wrappedReject}
         />
       )}
+
+      {/* {activeView === 'audit' && <AuditReportView />} */}
     </AppShell>
   )
 }
