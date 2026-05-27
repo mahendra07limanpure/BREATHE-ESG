@@ -133,7 +133,6 @@ def determine_activity_type(tariff):
         return "residential_electricity"
     return "electricity"
 
-
 # =====================================================
 # FLAG CHECKER FOR ELECTRICITY ROWS
 # Returns (status, flag_reason)
@@ -142,7 +141,6 @@ def check_flags(parsed, all_quantities=None, conversion_note=None):
     qty  = parsed.get("quantity_normalised")
     dt   = parsed.get("record_date")
     unit_recognised = parsed.get("_unit_recognised", True)
-    is_cross_month  = parsed.get("_is_cross_month", False)
 
     # Check 1 — negative consumption
     if qty is not None and qty < 0:
@@ -168,11 +166,13 @@ def check_flags(parsed, all_quantities=None, conversion_note=None):
     if conversion_note:
         return ("flagged", conversion_note)
 
-    # Check 7 — billing period crosses months (flagged for transparency)
-    if is_cross_month:
-        return ("flagged", "Billing period crosses calendar months — consumption apportioned by days")
+    # ─── CHECK 7 REMOVED ───────────────────────────
+    # Cross-month billing is NORMAL for Indian utilities
+    # The parser already handles it correctly via apportionment
+    # Flagging it confused analysts — 90% of rows were flagged
+    # ───────────────────────────────────────────────
 
-    # Check 8 — statistical outlier
+    # Check 7 (was 8) — statistical outlier
     if all_quantities and qty is not None and len(all_quantities) > 3:
         import statistics
         mean  = statistics.mean(all_quantities)
@@ -183,7 +183,6 @@ def check_flags(parsed, all_quantities=None, conversion_note=None):
                     f"(>{round(mean + 3*stdev, 1)} kWh) — possible meter fault")
 
     return ("pending", None)
-
 
 # =====================================================
 # SINGLE ROW PARSER
@@ -276,7 +275,7 @@ def parse_electricity_row(row):
 
             # internals for flag checker
             "_unit_recognised": unit_recognised,
-            "_is_cross_month":  is_cross_month,
+           
         }
 
         status, flag_reason = check_flags(

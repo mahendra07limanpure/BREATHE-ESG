@@ -29,10 +29,15 @@ export default function App() {
     }
   }, [])
 
-  const handleIngestSuccess = useCallback(() => {
+  // FIX: After upload, reload records to ensure they display correctly
+  const handleIngestSuccess = useCallback(async () => {
     refreshDashboard()
-    setReviewPrefs({ status: 'flagged', source: '' })
-  }, [refreshDashboard])
+    const newPrefs = { status: 'flagged', source: '' }
+    setReviewPrefs(newPrefs)
+    // ✅ IMPORTANT: Reload the records with the new prefs after upload
+    // This ensures flagged data displays instead of showing empty state
+    await load({ status: newPrefs.status, sourceType: newPrefs.source })
+  }, [refreshDashboard, load])
 
   const handleRecordAction = useCallback(async () => {
     await refreshDashboard()

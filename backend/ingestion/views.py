@@ -1,5 +1,6 @@
 import json
 import logging
+import math
 from datetime import datetime
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
@@ -10,6 +11,14 @@ from ingestion.models import EmissionRecord, UploadBatch, AuditLog
 from ingestion.services.ingestion_service import ingest_file
 
 logger = logging.getLogger(__name__)
+
+
+def safe_json_float(val):
+    """Convert float values like NaN to None so they serialize cleanly as null in JSON."""
+    if val is None or (isinstance(val, float) and math.isnan(val)):
+        return None
+    return val
+
 
 
 @csrf_exempt
@@ -90,11 +99,11 @@ def review_records(request):
             "activity_type": r.activity_type,
             "site_name": r.site_name,
             "record_date": r.record_date.isoformat(),
-            "quantity_raw": r.quantity_raw,
+            "quantity_raw": safe_json_float(r.quantity_raw),
             "unit_raw": r.unit_raw,
-            "quantity_normalised": r.quantity_normalised,
+            "quantity_normalised": safe_json_float(r.quantity_normalised),
             "unit_normalised": r.unit_normalised,
-            "co2_kg": r.co2_kg,
+            "co2_kg": safe_json_float(r.co2_kg),
             "status": r.status,
             "flag_reason": r.flag_reason,
             "is_locked": r.is_locked,
@@ -349,9 +358,9 @@ def audit_report(request):
             "source_type": r.source_type,
             "activity_type": r.activity_type,
             "record_date": r.record_date.isoformat(),
-            "quantity_normalised": r.quantity_normalised,
+            "quantity_normalised": safe_json_float(r.quantity_normalised),
             "unit_normalised": r.unit_normalised,
-            "co2_kg": r.co2_kg,
+            "co2_kg": safe_json_float(r.co2_kg),
             "flag_reason": r.flag_reason,
             "updated_at": r.updated_at.isoformat() if r.updated_at else None,
         })

@@ -32,8 +32,15 @@ export default function ReviewView({
   }, [initialStatus])
 
   useEffect(() => {
+    setSourceType(initialSource)
+  }, [initialSource])
+
+  // FIX: Removed onLoad from dependency array
+  // onLoad is a function that changes on every parent render, causing infinite loops
+  // Removing it ensures the effect only runs when status or sourceType changes
+  useEffect(() => {
     onLoad({ status, sourceType })
-  }, [status, sourceType, onLoad])
+  }, [status, sourceType])
 
   const handleBulkApprove = async () => {
     setBulkApproving(true)

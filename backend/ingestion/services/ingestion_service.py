@@ -63,16 +63,20 @@ def load_csv(file_path):
 
 # =====================================================
 # SAFE FLOAT
-# Coerces None/bad values to 0.0
-# Prevents FloatField crash on bulk_create
+# Coerces None/bad/NaN values to 0.0
+# Prevents FloatField crash or malformed JSON serialization on bulk_create
 # =====================================================
 def safe_float(value, default=0.0):
     if value is None:
         return default
     try:
-        return float(value)
+        val = float(value)
+        if math.isnan(val):
+            return default
+        return val
     except (ValueError, TypeError):
         return default
+
 
 
 # =====================================================
